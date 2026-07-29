@@ -28,8 +28,11 @@ const serviceDescription = document.querySelector(
 );
 const serviceIndex = document.querySelector(".service-details__index");
 const serviceLink = document.querySelector(".service-details__link");
-const serviceThumb = document.querySelector(".service-details__thumb");
 const serviceDots = [...document.querySelectorAll(".service-dot")];
+
+const brandScreen = document.querySelector(".brand-screen");
+const brandFull = document.querySelector(".brand-screen__full");
+const brandPlayButton = document.querySelector(".brand-screen__play");
 
 const serviceData = [
   {
@@ -269,9 +272,6 @@ function updateService(index, animate = true) {
     serviceTitle.textContent = service.title;
     serviceDescription.textContent = service.description;
     serviceLink.href = service.href;
-    if (serviceThumb) {
-      serviceThumb.src = service.image;
-    }
     serviceDots.forEach((dot, dotIndex) => {
       dot.classList.toggle("is-active", dotIndex === activeService);
     });
@@ -283,7 +283,6 @@ function updateService(index, animate = true) {
   }
 
   const block = [
-    serviceThumb,
     serviceIndex,
     serviceTitle,
     serviceDescription,
@@ -320,7 +319,9 @@ function createServicesScene() {
 
   ScrollTrigger.create({
     trigger,
-    start: "top 72%",
+    // Raise the keychain onto the stack early (before its dissolve begins) so
+    // it never pops in behind the still-held inflatable screen.
+    start: "top 94%",
     end: "bottom top",
     onEnter: () => {
       activateVideo(videos.keychain);
@@ -347,24 +348,52 @@ function createServicesScene() {
     },
   });
 
+  // Long, soft dissolve from the inflatable screen into the keychain, with a
+  // focus-pull so it melts in rather than hard-cutting.
   gsap.fromTo(
     videos.keychain,
     {
       autoAlpha: 0,
-      scale: 1.08,
+      scale: 1.12,
+      filter: "contrast(1.02) saturate(0.96) blur(8px)",
     },
     {
       autoAlpha: 1,
       scale: 1,
+      filter: "contrast(1.02) saturate(0.96) blur(0px)",
       ease: "none",
       scrollTrigger: {
         trigger,
-        start: "top 75%",
-        end: "top 15%",
+        start: "top 92%",
+        end: "top 30%",
         scrub: true,
       },
     }
   );
+
+  // Gently push the camera "through" the outgoing screen during the handoff so
+  // the transition keeps moving instead of cutting from a frozen frame.
+  gsap.to(videos.screen, {
+    scale: 1.14,
+    filter: "contrast(1.02) saturate(0.96) blur(3px)",
+    ease: "none",
+    scrollTrigger: {
+      trigger,
+      start: "top 96%",
+      end: "top 30%",
+      scrub: true,
+    },
+  });
+
+  // Fade the play button out in step with the dissolve.
+  ScrollTrigger.create({
+    trigger,
+    start: "top 94%",
+    end: "top 58%",
+    onUpdate: (self) => {
+      gsap.set(brandScreen, { autoAlpha: 1 - self.progress });
+    },
+  });
 
   gsap.fromTo(
     servicesExplorer,
@@ -400,6 +429,130 @@ function createServicesScene() {
       start: "top top",
       end: "bottom bottom",
       scrub: true,
+    },
+  });
+}
+
+// --- Brand showreel inside the inflatable screen ---------------------------
+
+let brandFullscreenActive = false;
+
+function isBrandFullscreen() {
+  const fsEl = document.fullscreenElement || document.webkitFullscreenElement;
+  return fsEl === brandScreen || fsEl === brandFull;
+}
+
+function exitBrandFullscreenState() {
+  brandFullscreenActive = false;
+  brandScreen.classList.remove("is-fullscreen");
+  brandFull.pause();
+  brandFull.muted = true;
+}
+
+function enterBrandFullscreen() {
+  brandFullscreenActive = true;
+  brandScreen.classList.add("is-fullscreen");
+  brandFull.currentTime = 0;
+  brandFull.muted = false;
+
+  const playWithSound = () => {
+    const p = brandFull.play();
+    if (p && typeof p.catch === "function") {
+      p.catch(() => {
+        // Last resort: at least run the video muted so it isn't frozen.
+        brandFull.muted = true;
+        brandFull.play().catch(() => {});
+      });
+    }
+  };
+
+  const target = brandFull;
+  if (target.requestFullscreen || target.webkitRequestFullscreen) {
+    const request = target.requestFullscreen || target.webkitRequestFullscreen;
+    try {
+      const result = request.call(target);
+      // Start playback only once fullscreen is active, otherwise the
+      // fullscreen transition interrupts play() (AbortError).
+      if (result && typeof result.then === "function") {
+        result.then(playWithSound).catch(playWithSound);
+      } else {
+        playWithSound();
+      }
+    } catch (error) {
+      playWithSound();
+    }
+  } else if (target.webkitEnterFullscreen) {
+    // iOS Safari: must be playing before entering fullscreen on the video.
+    playWithSound();
+    try {
+      target.webkitEnterFullscreen();
+    } catch (error) {
+      console.info("Fullscreen request was blocked:", error);
+    }
+  } else {
+    playWithSound();
+  }
+}
+
+function setupBrandInteractions() {
+  brandPlayButton.addEventListener("click", (event) => {
+    event.preventDefault();
+    if (!brandFullscreenActive) enterBrandFullscreen();
+  });
+
+  // Keep our state in sync when the user leaves fullscreen (Esc, etc.).
+  const syncFullscreen = () => {
+    if (!isBrandFullscreen() && brandFullscreenActive) {
+      exitBrandFullscreenState();
+    }
+  };
+  document.addEventListener("fullscreenchange", syncFullscreen);
+  document.addEventListener("webkitfullscreenchange", syncFullscreen);
+  // iOS video fullscreen fires its own end event.
+  brandFull.addEventListener("webkitendfullscreen", () => {
+    if (brandFullscreenActive) exitBrandFullscreenState();
+  });
+}
+
+function createBrandScene() {
+  const brandTrigger = document.querySelector('[data-scene="brand"]');
+  const screenScene = document.querySelector('[data-scene="screen"]');
+
+  // Slowly reveal the play button over the last stretch of the screen
+  // inflation — it becomes visible once the screen is almost fully open.
+  ScrollTrigger.create({
+    trigger: screenScene,
+    start: "top bottom",
+    end: "bottom top",
+    onUpdate: (self) => {
+      const revealed = gsap.utils.clamp(0, 1, (self.progress - 0.78) / 0.22);
+      gsap.set(brandScreen, { autoAlpha: revealed });
+    },
+  });
+
+  // Hold the fully inflated screen (no early hand-off to the keychain) while
+  // the play button is available. The fade-out is handled by the keychain
+  // dissolve so the button leaves in step with the transition.
+  ScrollTrigger.create({
+    trigger: brandTrigger,
+    start: "top bottom",
+    end: "bottom top",
+    onEnter: () => {
+      activateVideo(videos.screen);
+      showMessage(null);
+      chapterCurrent.textContent = "04";
+      gsap.set(brandScreen, { autoAlpha: 1 });
+      // Start buffering the showreel so the click plays it instantly.
+      if (brandFull.preload !== "auto") {
+        brandFull.preload = "auto";
+        brandFull.load();
+      }
+    },
+    onEnterBack: () => {
+      activateVideo(videos.screen);
+      showMessage(null);
+      chapterCurrent.textContent = "04";
+      gsap.set(brandScreen, { autoAlpha: 1 });
     },
   });
 }
@@ -544,6 +697,9 @@ async function initialiseExperience() {
     chapter: "04",
     fadeBackgroundTo: "#050505",
   });
+
+  createBrandScene();
+  setupBrandInteractions();
 
   createServicesScene();
   createProgressIndicator();

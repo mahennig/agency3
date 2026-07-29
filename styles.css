@@ -207,6 +207,71 @@ a {
   background-size: 6px 6px;
 }
 
+/* Brand showreel inside the inflatable screen */
+.brand-screen {
+  /* Positioned over the black display area of the inflatable screen. Tuned to
+     the 04-inflatable-screen end frame. */
+  position: absolute;
+  top: 22%;
+  left: 24%;
+  width: 52%;
+  height: 57%;
+  z-index: 6;
+  display: grid;
+  place-items: center;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+.brand-screen__full {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: none;
+  object-fit: contain;
+  background: #000;
+  z-index: 2;
+}
+.brand-screen.is-fullscreen .brand-screen__full {
+  display: block;
+}
+.brand-screen.is-fullscreen .brand-screen__play {
+  display: none;
+}
+.brand-screen__play {
+  position: relative;
+  z-index: 3;
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 26px;
+  /* Only the button is interactive; the rest of the screen stays passive. */
+  pointer-events: auto;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 100px;
+  background: rgba(5, 5, 5, 0.4);
+  backdrop-filter: blur(6px);
+  color: var(--white);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  cursor: pointer;
+  transition:
+    background 0.25s ease,
+    border-color 0.25s ease,
+    transform 0.25s ease;
+}
+.brand-screen__play:hover {
+  background: rgba(5, 5, 5, 0.7);
+  border-color: var(--lime);
+  transform: scale(1.04);
+}
+.brand-screen__play-icon {
+  color: var(--lime);
+  font-size: 11px;
+}
+
 /* Story copy */
 .story-copy {
   position: absolute;
@@ -321,6 +386,9 @@ a {
 .scroll-scene {
   min-height: 135vh;
 }
+.scroll-scene--brand {
+  min-height: 130vh;
+}
 .scroll-scene--services {
   min-height: 380vh;
 }
@@ -351,15 +419,6 @@ a {
   left: var(--page-padding);
   bottom: clamp(44px, 8vh, 100px);
   width: min(470px, calc(100% - 40px));
-}
-.service-details__thumb {
-  display: block;
-  width: 132px;
-  height: 74px;
-  margin: 0 0 22px;
-  object-fit: cover;
-  filter: grayscale(0.15) contrast(1.05);
-  opacity: 0.9;
 }
 .service-details__index {
   margin: 0 0 18px;
@@ -526,11 +585,6 @@ a {
   }
   .service-details {
     bottom: 82px;
-  }
-  .service-details__thumb {
-    width: 108px;
-    height: 60px;
-    margin-bottom: 16px;
   }
   .service-details__title {
     font-size: 48px;

@@ -95,6 +95,29 @@
 
           <div class="grain" aria-hidden="true"></div>
 
+          <!--
+            Brand showreel that lives inside the inflatable screen. A play
+            button fades in once the screen is almost fully inflated; clicking
+            it plays the showreel fullscreen with sound.
+          -->
+          <div class="brand-screen">
+            <video
+              class="brand-screen__full"
+              src="./public/videos/brand-video.mp4"
+              playsinline
+              preload="none"
+              controls
+            ></video>
+            <button
+              class="brand-screen__play"
+              type="button"
+              aria-label="Play the showreel fullscreen with sound"
+            >
+              <span class="brand-screen__play-icon" aria-hidden="true">▶</span>
+              <span class="brand-screen__play-label">Play with sound</span>
+            </button>
+          </div>
+
           <div class="story-copy">
             <article class="story-message story-message--paint is-visible">
               <p class="story-message__eyebrow">01 — Energy</p>
@@ -150,14 +173,6 @@
             </div>
 
             <div class="service-details">
-              <img
-                class="service-details__thumb"
-                src="./public/images/service-film.webp"
-                alt=""
-                aria-hidden="true"
-                width="800"
-                height="450"
-              />
               <p class="service-details__index">01 / 04</p>
               <h3 class="service-details__title">Film Production</h3>
               <p class="service-details__description">
@@ -207,6 +222,7 @@
           <div class="scroll-scene" data-scene="threads"></div>
           <div class="scroll-scene" data-scene="cable"></div>
           <div class="scroll-scene" data-scene="screen"></div>
+          <div class="scroll-scene scroll-scene--brand" data-scene="brand"></div>
           <div
             class="scroll-scene scroll-scene--services"
             data-scene="keychain"
