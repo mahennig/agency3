@@ -124,24 +124,27 @@ function startSmoothScrub() {
 
 function showMessage(message) {
   Object.values(messages).forEach((item) => {
-    gsap.set(item, {
-      autoAlpha: 0,
-      y: 28,
-    });
-    gsap.set(item.querySelectorAll(".line"), {
-      autoAlpha: 0,
-      y: 24,
-    });
+    // Leave the caption we're about to reveal untouched here.
+    if (item === message) return;
+    const lines = item.querySelectorAll(".line");
+    // Kill any in-flight reveal on the outgoing caption, then hard-hide it —
+    // otherwise a still-running tween keeps fading it back in and the
+    // captions overlap when scrolling quickly.
+    gsap.killTweensOf([item, ...lines]);
+    gsap.set(item, { autoAlpha: 0, y: 28 });
+    gsap.set(lines, { autoAlpha: 0, y: 24 });
   });
   if (!message) return;
 
   // The caption block fades/rises in, then its lines stagger — animating
-  // separately from the scroll-driven video underneath.
+  // separately from the scroll-driven video underneath. overwrite:true makes
+  // each new reveal cancel any earlier one on the same target.
   gsap.to(message, {
     autoAlpha: 1,
     y: 0,
     duration: 0.6,
     ease: "power3.out",
+    overwrite: true,
   });
   gsap.to(message.querySelectorAll(".line"), {
     autoAlpha: 1,
@@ -149,6 +152,7 @@ function showMessage(message) {
     duration: 0.7,
     stagger: 0.08,
     ease: "power3.out",
+    overwrite: true,
   });
 }
 
