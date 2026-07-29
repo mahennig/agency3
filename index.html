@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <meta
+      name="description"
+      content="Design Mindset — an interactive cinematic creative experience."
+    />
+    <meta name="theme-color" content="#050505" />
+    <title>Design Mindset</title>
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+    <link
+      rel="preload"
+      as="font"
+      type="font/woff2"
+      href="./public/fonts/AsteroneRegular/font.woff2"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      as="font"
+      type="font/woff2"
+      href="./public/fonts/AsteroneBold/font.woff2"
+      crossorigin
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="loading-screen" aria-hidden="true">
+      <div class="loading-screen__dot"></div>
+      <p>Loading the experience</p>
+    </div>
+
+    <header class="site-header">
+      <a href="#experience" class="logo" aria-label="Design Mindset home">
+        <span>DESIGN</span>
+        <span>MINDSET</span>
+      </a>
+      <button class="menu-button" type="button" aria-label="Open navigation">
+        Menu
+      </button>
+    </header>
+
+    <main id="experience">
+      <!--
+        Fixed cinematic stage.
+        The videos are stacked and scrubbed by scroll — one continuous film.
+      -->
+      <section class="experience">
+        <div class="experience__sticky">
+          <div class="background-transition" aria-hidden="true"></div>
+
+          <div class="video-stack" aria-hidden="true">
+            <video
+              class="story-video story-video--paint is-active"
+              src="./public/videos/01-paint-flow.mp4"
+              poster="./public/poster.webp"
+              muted
+              playsinline
+              preload="auto"
+            ></video>
+            <video
+              class="story-video story-video--threads"
+              src="./public/videos/02-threads.mp4"
+              muted
+              playsinline
+              preload="auto"
+            ></video>
+            <video
+              class="story-video story-video--cable"
+              src="./public/videos/03-cable-line.mp4"
+              muted
+              playsinline
+              preload="auto"
+            ></video>
+            <video
+              class="story-video story-video--screen"
+              src="./public/videos/04-inflatable-screen.mp4"
+              muted
+              playsinline
+              preload="auto"
+            ></video>
+            <video
+              class="story-video story-video--keychain"
+              src="./public/videos/05-keychain.mp4"
+              muted
+              playsinline
+              preload="auto"
+            ></video>
+          </div>
+
+          <div class="grain" aria-hidden="true"></div>
+
+          <div class="story-copy">
+            <article class="story-message story-message--paint is-visible">
+              <p class="story-message__eyebrow">01 — Energy</p>
+              <h1>
+                <span class="line">Ideas begin</span>
+                <span class="line accent">before they have a form.</span>
+              </h1>
+            </article>
+            <article class="story-message story-message--threads">
+              <p class="story-message__eyebrow">02 — Connection</p>
+              <h2>
+                <span class="line">They twist.</span>
+                <span class="line accent">They meet. They connect.</span>
+              </h2>
+            </article>
+            <article class="story-message story-message--cable">
+              <p class="story-message__eyebrow">03 — Direction</p>
+              <h2>
+                <span class="line">Complexity becomes</span>
+                <span class="line accent">a clear path forward.</span>
+              </h2>
+            </article>
+            <article class="story-message story-message--screen">
+              <p class="story-message__eyebrow">04 — Creation</p>
+              <h2>
+                <span class="line">We turn ideas</span>
+                <span class="line accent">into impact.</span>
+              </h2>
+            </article>
+          </div>
+
+          <div class="scroll-indicator">
+            <span>Scroll to explore</span>
+            <div class="scroll-indicator__line">
+              <div class="scroll-indicator__progress"></div>
+            </div>
+          </div>
+
+          <div class="chapter-counter" aria-hidden="true">
+            <span class="chapter-counter__current">01</span>
+            <span class="chapter-counter__separator"></span>
+            <span>05</span>
+          </div>
+
+          <!-- Becomes visible and interactive during the keychain scene. -->
+          <section class="services-explorer" aria-label="Explore our services">
+            <div class="services-explorer__intro">
+              <p class="story-message__eyebrow">05 — The System</p>
+              <h2>
+                <span class="line">One mindset.</span>
+                <span class="line accent">Different forms.</span>
+              </h2>
+            </div>
+
+            <div class="service-details">
+              <img
+                class="service-details__thumb"
+                src="./public/images/service-film.webp"
+                alt=""
+                aria-hidden="true"
+                width="800"
+                height="450"
+              />
+              <p class="service-details__index">01 / 04</p>
+              <h3 class="service-details__title">Film Production</h3>
+              <p class="service-details__description">
+                Commercials, brand films and visual stories made to move.
+              </p>
+              <a href="/services/film-production" class="service-details__link">
+                Explore service
+                <span aria-hidden="true">↗</span>
+              </a>
+            </div>
+
+            <div class="service-dots" aria-label="Select a service">
+              <button
+                class="service-dot is-active"
+                type="button"
+                data-service="0"
+                aria-label="Film Production"
+              ></button>
+              <button
+                class="service-dot"
+                type="button"
+                data-service="1"
+                aria-label="Brand Identity"
+              ></button>
+              <button
+                class="service-dot"
+                type="button"
+                data-service="2"
+                aria-label="Social Media"
+              ></button>
+              <button
+                class="service-dot"
+                type="button"
+                data-service="3"
+                aria-label="Creative Strategy"
+              ></button>
+            </div>
+          </section>
+        </div>
+
+        <!--
+          These invisible zones create the scroll length.
+          Each scene is given 100vh–380vh of travel.
+        -->
+        <div class="scroll-scenes">
+          <div class="scroll-scene" data-scene="paint"></div>
+          <div class="scroll-scene" data-scene="threads"></div>
+          <div class="scroll-scene" data-scene="cable"></div>
+          <div class="scroll-scene" data-scene="screen"></div>
+          <div
+            class="scroll-scene scroll-scene--services"
+            data-scene="keychain"
+          ></div>
+        </div>
+      </section>
+
+      <section class="final-section">
+        <div class="final-section__network" aria-hidden="true">
+          <span class="network-point network-point--1"></span>
+          <span class="network-point network-point--2"></span>
+          <span class="network-point network-point--3"></span>
+          <span class="network-point network-point--4"></span>
+          <span class="network-point network-point--5"></span>
+          <svg
+            class="network-lines"
+            viewBox="0 0 1000 600"
+            preserveAspectRatio="none"
+          >
+            <path d="M120 290 C260 70 400 500 520 275" />
+            <path d="M520 275 C690 40 770 510 890 240" />
+            <path d="M210 470 C390 320 650 400 810 120" />
+            <path d="M120 290 C380 300 650 100 890 240" />
+          </svg>
+        </div>
+        <div class="final-section__content">
+          <p class="story-message__eyebrow">Everything connects</p>
+          <h2>
+            <span class="line">That's Design</span>
+            <span class="line accent">Mindset.</span>
+          </h2>
+          <a href="/contact" class="final-cta">
+            Let's build something meaningful
+            <span aria-hidden="true">↗</span>
+          </a>
+        </div>
+      </section>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/gsap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/ScrollTrigger.min.js"></script>
+    <script src="./script.js"></script>
+  </body>
+</html>
